@@ -47,7 +47,7 @@ import java.util.List;
 
 @Tags({"Accumulo, Connection, Instance"})
 @CapabilityDescription("Provides Accumulo connector to a given instance")
-public class Accumulo_1_7_2_ConnectorService extends AbstractControllerService implements AccumuloClientService {
+public class Accumulo_1_7_0_ConnectorService extends AbstractControllerService implements AccumuloClientService {
 
     private Connector connector;
     private List<PropertyDescriptor> properties;

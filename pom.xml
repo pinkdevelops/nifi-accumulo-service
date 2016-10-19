@@ -30,7 +30,7 @@
     <modules>
         <module>nifi-accumulo-service-api</module>
         <module>nifi-accumulo-service-api-nar</module>
-        <module>nifi-accumulo_1_7_2-client-service-bundle</module>
+        <module>nifi-accumulo_1_7_0-client-service-bundle</module>
         <module>nifi-accumulo-service-nar</module>
     </modules>
 
