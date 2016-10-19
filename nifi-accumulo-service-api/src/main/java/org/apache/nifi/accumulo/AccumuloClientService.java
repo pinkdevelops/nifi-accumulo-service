@@ -71,12 +71,12 @@ public interface AccumuloClientService extends ControllerService {
     void put(String tableName, Collection<PutFlowFile> mutations) throws IOException;
 
     /**
-     * Puts the given row to HBase with the provided columns.
+     * Puts the given mutation to Accumulo with the provided columns.
      *
-     * @param tableName the name of an HBase table
+     * @param tableName the name of an Accumulo table
      * @param rowId     the id of the row to put
      * @param mutations the columns of the row to put
-     * @throws IOException thrown when there are communication errors with HBase
+     * @throws IOException thrown when there are communication errors with Accumulo
      */
     void put(String tableName, String rowId, Collection<PutMutation> mutations) throws IOException;
 
