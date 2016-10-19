@@ -40,7 +40,10 @@ import org.apache.nifi.reporting.InitializationException;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 @Tags({"Accumulo, Connection, Instance"})
 @CapabilityDescription("Provides Accumulo connector to a given instance")
@@ -69,7 +72,7 @@ public class Accumulo_1_7_2_ConnectorService extends AbstractControllerService i
     @Override
     protected PropertyDescriptor getSupportedDynamicPropertyDescriptor(String propertyDescriptorName) {
         return new PropertyDescriptor.Builder()
-                .description("Specifies the value for '" + propertyDescriptorName + "' in the HBase configuration.")
+                .description("Specifies the value for '" + propertyDescriptorName + "' in the Accumulo configuration.")
                 .name(propertyDescriptorName)
                 .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
                 .dynamic(true)
@@ -126,14 +129,11 @@ public class Accumulo_1_7_2_ConnectorService extends AbstractControllerService i
     @Override
     public void put(final String tableName, final Collection<PutFlowFile> puts) throws IOException {
 
-        getLogger().info("Created a Put for PutFlowFile");
         BatchWriter writer = batchWriter(10000000L, tableName);
 
-        getLogger().info("puts length: " + puts.size());
-
         for (final PutFlowFile putFlowFile : puts) {
+            Mutation mutation = new Mutation(new Text(putFlowFile.getRow()));
             for (final PutMutation column : putFlowFile.getColumns()) {
-                Mutation mutation = new Mutation(new Text(putFlowFile.getRow()));
                 mutation.put(new Text(column.getColumnFamily()), new Text(column.getColumnQualifier()),
                         new ColumnVisibility(column.getColumnVisibilty()), new Value(column.getBuffer().getBytes()));
                 try {
@@ -144,7 +144,6 @@ public class Accumulo_1_7_2_ConnectorService extends AbstractControllerService i
             }
         }
         try {
-            getLogger().info("closing batchwriter in putflowfile");
             closeWriter(writer);
         } catch (MutationsRejectedException e) {
             e.printStackTrace();
@@ -154,7 +153,6 @@ public class Accumulo_1_7_2_ConnectorService extends AbstractControllerService i
     @Override
     public void put(final String tableName, final String rowId, final Collection<PutMutation> columns) throws IOException {
 
-        getLogger().info("Created a put for PutMutation");
         BatchWriter writer = batchWriter(10000000L, tableName);
 
         Mutation mutation = new Mutation(new Text(rowId));
@@ -164,13 +162,11 @@ public class Accumulo_1_7_2_ConnectorService extends AbstractControllerService i
         }
 
         try {
-            getLogger().info("writing mutation: " + mutation.getRow().toString());
             writer.addMutation(mutation);
         } catch (MutationsRejectedException e) {
             e.printStackTrace();
         }
         try {
-            getLogger().info("closing batchwriter in putmutation");
             closeWriter(writer);
         } catch (MutationsRejectedException e) {
             e.printStackTrace();
@@ -184,7 +180,6 @@ public class Accumulo_1_7_2_ConnectorService extends AbstractControllerService i
         BatchWriter batchWriter = null;
 
         try {
-            getLogger().info("Creating Accumulo Batchwriter");
             batchWriter = connector.createBatchWriter(tableName, bwConfig);
         } catch (TableNotFoundException e) {
             e.printStackTrace();
