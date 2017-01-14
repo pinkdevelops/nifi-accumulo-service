@@ -99,7 +99,6 @@ public class Accumulo_1_7_0_ConnectorService extends AbstractControllerService i
         return problems;
     }
 
-
     @OnEnabled
     public void onEnabled(final ConfigurationContext context) throws InitializationException, IOException, InterruptedException {
 
@@ -132,10 +131,11 @@ public class Accumulo_1_7_0_ConnectorService extends AbstractControllerService i
         BatchWriter writer = batchWriter(10000000L, tableName);
 
         for (final PutFlowFile putFlowFile : puts) {
-            Mutation mutation = new Mutation(new Text(putFlowFile.getRow()));
             for (final PutMutation column : putFlowFile.getColumns()) {
+                Mutation mutation = new Mutation(new Text(putFlowFile.getRow()));
                 mutation.put(new Text(column.getColumnFamily()), new Text(column.getColumnQualifier()),
                         new ColumnVisibility(column.getColumnVisibilty()), new Value(column.getBuffer().getBytes()));
+
                 try {
                     writer.addMutation(mutation);
                 } catch (MutationsRejectedException e) {
@@ -143,11 +143,13 @@ public class Accumulo_1_7_0_ConnectorService extends AbstractControllerService i
                 }
             }
         }
+
         try {
-            closeWriter(writer);
+            writer.close();
         } catch (MutationsRejectedException e) {
             e.printStackTrace();
         }
+
     }
 
     @Override
@@ -163,11 +165,7 @@ public class Accumulo_1_7_0_ConnectorService extends AbstractControllerService i
 
         try {
             writer.addMutation(mutation);
-        } catch (MutationsRejectedException e) {
-            e.printStackTrace();
-        }
-        try {
-            closeWriter(writer);
+            writer.close();
         } catch (MutationsRejectedException e) {
             e.printStackTrace();
         }
@@ -185,10 +183,6 @@ public class Accumulo_1_7_0_ConnectorService extends AbstractControllerService i
             e.printStackTrace();
         }
         return batchWriter;
-    }
-
-    public void closeWriter(BatchWriter bw) throws MutationsRejectedException {
-        bw.close();
     }
 
     @Override

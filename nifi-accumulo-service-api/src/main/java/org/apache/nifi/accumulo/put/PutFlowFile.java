@@ -64,7 +64,6 @@ public class PutFlowFile {
                 return false;
             }
         }
-
         return true;
     }
 

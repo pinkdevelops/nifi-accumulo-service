@@ -31,7 +31,6 @@ import java.util.Collection;
 @CapabilityDescription("A controller service for accessing an Accumulo connector")
 public interface AccumuloClientService extends ControllerService {
 
-
     public static final PropertyDescriptor ZOOKEEPER_QUORUM = new PropertyDescriptor.Builder()
             .name("ZooKeeper Quorum")
             .description("Comma-separated list of ZooKeeper hosts for Accumulo. Required if Hadoop Configuration Files are not provided.")
